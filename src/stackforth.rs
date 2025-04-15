@@ -1,5 +1,8 @@
+use crate::errors::StackError;
+
 pub struct StackForth {
     stack: Vec<i16>,
+    max_stack_size: usize,
 }
 
 impl Default for StackForth {
@@ -10,344 +13,351 @@ impl Default for StackForth {
 
 impl StackForth {
     pub fn new() -> Self {
-        Self { stack: Vec::new() }
+        Self {
+            stack: Vec::new(),
+            max_stack_size: 18,
+        }
     }
 
-    pub fn push(&mut self, value: i16) {
-        self.stack.push(value);
-    }
-
-    pub fn pop(&mut self) -> Option<i16> {
-        self.stack.pop()
-    }
-
-    pub fn add(&mut self) {
-        if let (Some(b), Some(a)) = (self.pop(), self.pop()) {
-            self.push(a + b);
+    pub fn push(&mut self, value: i16) -> Result<i16, StackError> {
+        if self.stack.len() >= self.max_stack_size {
+            Err(StackError::StackOverFlow)
         } else {
-            eprintln!("Error: Not enough values in stack");
+            self.stack.push(value);
+            Ok(value)
         }
     }
 
-    pub fn subtract(&mut self) {
-        if let (Some(b), Some(a)) = (self.pop(), self.pop()) {
-            self.push(a - b);
-        } else {
-            eprintln!("Error: Not enough values in stack");
-        }
+    pub fn pop(&mut self) -> Result<i16, StackError> {
+        self.stack.pop().ok_or(StackError::StackUnderFlow)
     }
 
-    pub fn multiply(&mut self) {
-        if let (Some(b), Some(a)) = (self.pop(), self.pop()) {
-            self.push(a * b);
-        } else {
-            eprintln!("Error: Not enough values in stack");
-        }
+    pub fn add(&mut self) -> Result<(), StackError> {
+        let b = self.pop()?;
+        let a = self.pop()?;
+        self.push(a + b)?;
+        Ok(())
     }
 
-    pub fn divide(&mut self) {
-        if let (Some(b), Some(a)) = (self.pop(), self.pop()) {
-            if b == 0 {
-                println!("Error: Divide by CERO");
-                self.push(a);
-                self.push(b);
-            } else {
-                self.push(a / b);
-            }
-        } else {
-            eprintln!("Error: Not enough values in stack");
-        }
+    pub fn subtract(&mut self) -> Result<(), StackError> {
+        let b = self.pop()?;
+        let a = self.pop()?;
+        self.push(a - b)?;
+        Ok(())
     }
 
-    pub fn dup(&mut self) {
-        if let Some(&top) = self.stack.last() {
-            self.stack.push(top);
-        } else {
-            eprintln!("Error: No values in stack for DUP");
-        }
+    pub fn multiply(&mut self) -> Result<(), StackError> {
+        let b = self.pop()?;
+        let a = self.pop()?;
+        self.push(a * b)?;
+        Ok(())
     }
 
-    pub fn drop_top(&mut self) {
-        if self.stack.pop().is_none() {
-            println!("Error: Not enough values in stack for DROP");
+    pub fn divide(&mut self) -> Result<(), StackError> {
+        let b = self.pop()?;
+        let a = self.pop()?;
+        if b == 0 {
+            return Err(StackError::DivisionByZero);
         }
+        self.push(a / b)?;
+        Ok(())
     }
 
-    pub fn swap(&mut self) {
-        if self.stack.len() < 2 {
-            eprintln!("Error: Not enough values in stack for SWAP");
-            return;
-        }
-        let len = self.stack.len();
-        self.stack.swap(len - 1, len - 2);
+    pub fn dup(&mut self) -> Result<(), StackError> {
+        let top = *self.stack.last().ok_or(StackError::StackUnderFlow)?;
+        self.push(top)?;
+        Ok(())
     }
 
-    pub fn over(&mut self) {
-        if self.stack.len() < 2 {
-            eprintln!("Error: Not enough values in stack for OVER");
-            return;
-        }
-        let len = self.stack.len();
-        let second_last = self.stack[len - 2];
-        self.stack.push(second_last);
+    pub fn drop(&mut self) -> Result<(), StackError> {
+        self.pop()?;
+        Ok(())
     }
 
-    pub fn rot(&mut self) {
-        if self.stack.len() < 3 {
-            eprintln!("Error: Not enough values in stack for ROT");
-            return;
-        }
-        let len = self.stack.len();
-        self.stack.swap(len - 1, len - 2);
-        self.stack.swap(len - 2, len - 3);
+    pub fn swap(&mut self) -> Result<(), StackError> {
+        let first = self.pop()?;
+        let second = self.pop()?;
+
+        self.push(first)?;
+        self.push(second)?;
+
+        Ok(())
     }
 
-    pub fn equal(&mut self) {
-        if let (Some(a), Some(b)) = (self.pop(), self.pop()) {
-            self.push(if a == b { 1 } else { 0 });
-        }
+    pub fn over(&mut self) -> Result<(), StackError> {
+        let first = self.pop()?;
+        let second = self.pop()?;
+
+        self.push(second)?;
+        self.push(first)?;
+
+        self.push(second)?;
+
+        Ok(())
     }
 
-    //second pop in stack is less than first in stack
-    pub fn less_than(&mut self) {
-        if let (Some(a), Some(b)) = (self.pop(), self.pop()) {
-            self.push(if b < a { 1 } else { 0 });
-        }
+    pub fn rot(&mut self) -> Result<(), StackError> {
+        let third = self.pop()?;
+        let second = self.pop()?;
+        let first = self.pop()?;
+
+        self.push(second)?;
+        self.push(third)?;
+        self.push(first)?;
+
+        Ok(())
     }
 
-    //second pop in stack is garter than first in stack
-    pub fn greater_than(&mut self) {
-        if let (Some(a), Some(b)) = (self.pop(), self.pop()) {
-            self.push(if b > a { 1 } else { 0 });
-        }
+    pub fn equal(&mut self) -> Result<(), StackError> {
+        let a = self.pop()?;
+        let b = self.pop()?;
+        self.push(if a == b { -1 } else { 0 })?;
+        Ok(())
     }
 
-    pub fn and(&mut self) {
-        if let (Some(a), Some(b)) = (self.pop(), self.pop()) {
-            self.push(if a != 0 && b != 0 { 1 } else { 0 });
-        }
+    pub fn less_than(&mut self) -> Result<(), StackError> {
+        let a = self.pop()?;
+        let b = self.pop()?;
+        self.push(if b < a { -1 } else { 0 })?;
+        Ok(())
     }
 
-    pub fn or(&mut self) {
-        if let (Some(a), Some(b)) = (self.pop(), self.pop()) {
-            self.push(if a != 0 || b != 0 { 1 } else { 0 });
-        }
+    pub fn greater_than(&mut self) -> Result<(), StackError> {
+        let a = self.pop()?;
+        let b = self.pop()?;
+        self.push(if b > a { -1 } else { 0 })?;
+        Ok(())
     }
 
-    pub fn not(&mut self) {
-        if let Some(a) = self.pop() {
-            self.push(if a == 0 { 1 } else { 0 });
-        }
+    pub fn and(&mut self) -> Result<(), StackError> {
+        let a = self.pop()?;
+        let b = self.pop()?;
+        self.push(if a != 0 && b != 0 { -1 } else { 0 })?;
+        Ok(())
+    }
+
+    pub fn or(&mut self) -> Result<(), StackError> {
+        let a = self.pop()?;
+        let b = self.pop()?;
+        self.push(if a != 0 || b != 0 { -1 } else { 0 })?;
+        Ok(())
+    }
+
+    pub fn not(&mut self) -> Result<(), StackError> {
+        let a = self.pop()?;
+        self.push(if a == 0 { -1 } else { 0 })?;
+        Ok(())
     }
 }
 
 #[cfg(test)]
 mod test {
     use super::*;
+    use crate::errors::StackError;
 
     #[test]
     fn test_push_pop() {
         let mut stack = StackForth::new();
-        stack.push(42);
-        assert_eq!(stack.pop(), Some(42));
+        stack.push(42).unwrap();
+        assert_eq!(stack.pop().unwrap(), 42);
     }
 
     #[test]
     fn test_add() {
         let mut stack = StackForth::new();
-        stack.push(10);
-        stack.push(5);
-        stack.add();
-        assert_eq!(stack.pop(), Some(15));
+        stack.push(10).unwrap();
+        stack.push(5).unwrap();
+        stack.add().unwrap();
+        assert_eq!(stack.pop().unwrap(), 15);
     }
 
     #[test]
     fn test_subtract() {
         let mut stack = StackForth::new();
-        stack.push(10);
-        stack.push(5);
-        stack.subtract();
-        assert_eq!(stack.pop(), Some(5));
+        stack.push(10).unwrap();
+        stack.push(5).unwrap();
+        stack.subtract().unwrap();
+        assert_eq!(stack.pop().unwrap(), 5);
     }
 
     #[test]
     fn test_multiply() {
         let mut stack = StackForth::new();
-        stack.push(10);
-        stack.push(5);
-        stack.multiply();
-        assert_eq!(stack.pop(), Some(50));
+        stack.push(10).unwrap();
+        stack.push(5).unwrap();
+        stack.multiply().unwrap();
+        assert_eq!(stack.pop().unwrap(), 50);
     }
 
     #[test]
     fn test_divide() {
         let mut stack = StackForth::new();
-        stack.push(10);
-        stack.push(5);
-        stack.divide();
-        assert_eq!(stack.pop(), Some(2));
+        stack.push(10).unwrap();
+        stack.push(5).unwrap();
+        stack.divide().unwrap();
+        assert_eq!(stack.pop().unwrap(), 2);
     }
 
     #[test]
     fn test_divide_by_zero() {
         let mut stack = StackForth::new();
-        stack.push(10);
-        stack.push(0);
-        stack.divide();
-        assert_eq!(stack.pop(), Some(0));
+        stack.push(10).unwrap();
+        stack.push(0).unwrap();
+        let result = stack.divide();
+        assert!(matches!(result, Err(StackError::DivisionByZero)));
     }
 
     #[test]
     fn test_dup() {
         let mut stack = StackForth::new();
-        stack.push(42);
-        stack.dup();
-        assert_eq!(stack.pop(), Some(42));
-        assert_eq!(stack.pop(), Some(42));
+        stack.push(42).unwrap();
+        stack.dup().unwrap();
+        assert_eq!(stack.pop().unwrap(), 42);
+        assert_eq!(stack.pop().unwrap(), 42);
     }
 
     #[test]
     fn test_drop() {
         let mut stack = StackForth::new();
-        stack.push(42);
-        stack.drop_top();
-        assert_eq!(stack.pop(), None);
+        stack.push(42).unwrap();
+        stack.drop().unwrap();
+        assert!(stack.pop().is_err());
     }
 
     #[test]
     fn test_swap() {
         let mut stack = StackForth::new();
-        stack.push(10);
-        stack.push(20);
-        stack.swap();
-        assert_eq!(stack.pop(), Some(10));
-        assert_eq!(stack.pop(), Some(20));
+        stack.push(10).unwrap();
+        stack.push(20).unwrap();
+        stack.swap().unwrap();
+        assert_eq!(stack.pop().unwrap(), 10);
+        assert_eq!(stack.pop().unwrap(), 20);
     }
 
     #[test]
     fn test_over() {
         let mut stack = StackForth::new();
-        stack.push(10);
-        stack.push(20);
-        stack.over();
-        assert_eq!(stack.pop(), Some(10));
-        assert_eq!(stack.pop(), Some(20));
-        assert_eq!(stack.pop(), Some(10));
+        stack.push(10).unwrap();
+        stack.push(20).unwrap();
+        stack.over().unwrap();
+        assert_eq!(stack.pop().unwrap(), 10);
+        assert_eq!(stack.pop().unwrap(), 20);
+        assert_eq!(stack.pop().unwrap(), 10);
     }
 
     #[test]
     fn test_rot() {
         let mut stack = StackForth::new();
-        stack.push(10);
-        stack.push(20);
-        stack.push(30);
-        stack.rot();
-        assert_eq!(stack.pop(), Some(20));
-        assert_eq!(stack.pop(), Some(10));
-        assert_eq!(stack.pop(), Some(30));
+        stack.push(10).unwrap();
+        stack.push(20).unwrap();
+        stack.push(30).unwrap();
+        stack.rot().unwrap();
+        assert_eq!(stack.pop().unwrap(), 10);
+        assert_eq!(stack.pop().unwrap(), 30);
+        assert_eq!(stack.pop().unwrap(), 20);
     }
 
     #[test]
     fn test_equal() {
         let mut stack = StackForth::new();
-        stack.push(10);
-        stack.push(10);
-        stack.equal();
-        assert_eq!(stack.pop(), Some(1)); // 1 means true
+        stack.push(10).unwrap();
+        stack.push(10).unwrap();
+        stack.equal().unwrap();
+        assert_eq!(stack.pop().unwrap(), -1);
     }
 
     #[test]
     fn test_not_equal() {
         let mut stack = StackForth::new();
-        stack.push(10);
-        stack.push(5);
-        stack.equal();
-        assert_eq!(stack.pop(), Some(0)); // 0 means false
+        stack.push(10).unwrap();
+        stack.push(5).unwrap();
+        stack.equal().unwrap();
+        assert_eq!(stack.pop().unwrap(), 0);
     }
 
     #[test]
     fn test_less_than() {
         let mut stack = StackForth::new();
-        stack.push(5);
-        stack.push(10);
-        stack.less_than();
-        assert_eq!(stack.pop(), Some(1)); // 1 means true
+        stack.push(5).unwrap();
+        stack.push(10).unwrap();
+        stack.less_than().unwrap();
+        assert_eq!(stack.pop().unwrap(), -1);
     }
 
     #[test]
     fn test_not_less_than() {
         let mut stack = StackForth::new();
-        stack.push(10);
-        stack.push(5);
-        stack.less_than();
-        assert_eq!(stack.pop(), Some(0)); //0 means false
+        stack.push(10).unwrap();
+        stack.push(5).unwrap();
+        stack.less_than().unwrap();
+        assert_eq!(stack.pop().unwrap(), 0);
     }
 
     #[test]
     fn test_greater_than() {
         let mut stack = StackForth::new();
-        stack.push(10);
-        stack.push(5);
-        stack.greater_than();
-        assert_eq!(stack.pop(), Some(1)); // 1 means true
+        stack.push(10).unwrap();
+        stack.push(5).unwrap();
+        stack.greater_than().unwrap();
+        assert_eq!(stack.pop().unwrap(), -1);
     }
 
     #[test]
     fn test_not_greater_than() {
         let mut stack = StackForth::new();
-        stack.push(5);
-        stack.push(10);
-        stack.greater_than();
-        assert_eq!(stack.pop(), Some(0)); // 0 significa falso
+        stack.push(5).unwrap();
+        stack.push(10).unwrap();
+        stack.greater_than().unwrap();
+        assert_eq!(stack.pop().unwrap(), 0);
     }
 
     #[test]
     fn test_and() {
         let mut stack = StackForth::new();
-        stack.push(1); // verdadero
-        stack.push(1); // verdadero
-        stack.and();
-        assert_eq!(stack.pop(), Some(1));
+        stack.push(1).unwrap();
+        stack.push(1).unwrap();
+        stack.and().unwrap();
+        assert_eq!(stack.pop().unwrap(), -1);
 
-        stack.push(1); // ture
-        stack.push(0); // false
-        stack.and();
-        assert_eq!(stack.pop(), Some(0));
+        stack.push(1).unwrap();
+        stack.push(0).unwrap();
+        stack.and().unwrap();
+        assert_eq!(stack.pop().unwrap(), 0);
 
-        stack.push(0); // false
-        stack.push(0); // false
-        stack.and();
-        assert_eq!(stack.pop(), Some(0));
+        stack.push(0).unwrap();
+        stack.push(0).unwrap();
+        stack.and().unwrap();
+        assert_eq!(stack.pop().unwrap(), 0);
     }
 
     #[test]
     fn test_or() {
         let mut stack = StackForth::new();
-        stack.push(1); // verdadero
-        stack.push(1); // falso
-        stack.or();
-        assert_eq!(stack.pop(), Some(1));
+        stack.push(1).unwrap();
+        stack.push(1).unwrap();
+        stack.or().unwrap();
+        assert_eq!(stack.pop().unwrap(), -1);
 
-        stack.push(1); // verdadero
-        stack.push(0); // falso
-        stack.or();
-        assert_eq!(stack.pop(), Some(1));
+        stack.push(1).unwrap();
+        stack.push(0).unwrap();
+        stack.or().unwrap();
+        assert_eq!(stack.pop().unwrap(), -1);
 
-        stack.push(0); // falso
-        stack.push(0); // falso
-        stack.or();
-        assert_eq!(stack.pop(), Some(0));
+        stack.push(0).unwrap();
+        stack.push(0).unwrap();
+        stack.or().unwrap();
+        assert_eq!(stack.pop().unwrap(), 0);
     }
 
     #[test]
     fn test_not() {
         let mut stack = StackForth::new();
-        stack.push(1);
-        stack.not();
-        assert_eq!(stack.pop(), Some(0));
+        stack.push(1).unwrap();
+        stack.not().unwrap();
+        assert_eq!(stack.pop().unwrap(), 0);
 
-        stack.push(0);
-        stack.not();
-        assert_eq!(stack.pop(), Some(1));
+        stack.push(0).unwrap();
+        stack.not().unwrap();
+        assert_eq!(stack.pop().unwrap(), -1);
     }
 }

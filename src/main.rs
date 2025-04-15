@@ -1,11 +1,19 @@
+mod commandinterpreter;
+mod commands;
+mod errors;
 mod file;
 mod forthinterpreter;
 mod parse;
 mod stackforth;
+mod traits;
 
-use forthinterpreter::ForthInterpreter;
+use crate::forthinterpreter::ForthInterpreter;
 use std::env;
 
+/// FUNCTION: main()
+/// Reads the first command-line argument as the input file path.
+/// Parses the contents of the file into individual lines.
+/// For each parsed line, invokes `ForthInterpreter` to execute the corresponding command line.
 fn main() {
     let args: Vec<String> = env::args().collect();
 
@@ -14,16 +22,22 @@ fn main() {
         return;
     }
 
-    let resultado = file::read_file(&args[1]);
+    let input_file = &args[1];
+    let output_file = if args.len() >= 3 {
+        &args[2]
+    } else {
+        "stack.fth"
+    };
 
-    match resultado {
+    let mut interpreter = ForthInterpreter::new();
+
+    match file::read_file(input_file) {
         Ok(lines) => {
-            let mut forth_interpreter = ForthInterpreter::new();
             for line in lines {
                 let parsed = parse::parse(line);
-                forth_interpreter.execute(parsed);
+                commandinterpreter::interpret_commands(&mut interpreter, parsed);
             }
-            forth_interpreter.empty_forth("stack.fth");
+            interpreter.empty_forth(output_file);
         }
         Err(e) => eprintln!("Error while opening file: {}", e),
     }

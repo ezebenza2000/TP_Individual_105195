@@ -1,3 +1,4 @@
+use crate::stackforth::StackForth;
 use std::fs::File;
 use std::io::{self, BufRead, BufReader, Write};
 
@@ -17,9 +18,18 @@ pub fn read_file(file_name: &str) -> Result<Vec<String>, io::Error> {
     Ok(lines)
 }
 
-pub fn write_to_file(file_name: &str, content: &str) -> Result<(), io::Error> {
+pub fn write_to_file(file_name: &str, stack: &mut StackForth) -> Result<(), io::Error> {
     let mut file = File::create(file_name)?;
 
-    writeln!(file, "{}", content)?;
+    let mut values = Vec::new();
+    while let Ok(value) = stack.pop() {
+        values.push(value.to_string());
+    }
+
+    if !values.is_empty() {
+        values.reverse();
+        write!(file, "{}", values.join(" "))?;
+    }
+
     Ok(())
 }
