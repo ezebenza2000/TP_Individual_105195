@@ -99,11 +99,11 @@ impl ForthInterpreter {
         self.fundamental_words
             .insert("<".to_string(), Box::new(LessCommand));
         self.fundamental_words
-            .insert("IF".to_string(), Box::new(IfCommand));
+            .insert("if".to_string(), Box::new(IfCommand));
         self.fundamental_words
-            .insert("ELSE".to_string(), Box::new(ElseCommand));
+            .insert("else".to_string(), Box::new(ElseCommand));
         self.fundamental_words
-            .insert("THEN".to_string(), Box::new(ThenCommand));
+            .insert("then".to_string(), Box::new(ThenCommand));
     }
     fn register_words(&mut self) {
         // Forth words definitions (can change)
@@ -133,11 +133,11 @@ impl ForthInterpreter {
         self.words.insert("or".to_string(), vec!["OR".to_string()]);
         self.words
             .insert("not".to_string(), vec!["NOT".to_string()]);
-        self.words.insert("if".to_string(), vec!["IF".to_string()]);
+        self.words.insert("if".to_string(), vec!["if".to_string()]);
         self.words
-            .insert("else".to_string(), vec!["ELSE".to_string()]);
+            .insert("else".to_string(), vec!["else".to_string()]);
         self.words
-            .insert("then".to_string(), vec!["THEN".to_string()]);
+            .insert("then".to_string(), vec!["then".to_string()]);
     }
 
     /// Empties the stack by calling `StackForth` and writes the content to the specified file path.
@@ -158,28 +158,69 @@ impl ForthInterpreter {
         self.fundamental_words.contains_key(word)
     }
 
-    ///PRE: Receive a vector of strings
-    ///POST: Return a vector with each strings found in words hash value all together
-    pub fn expand_sequence(&self, input_sequence: &Vec<String>) -> Option<Vec<String>> {
+    pub fn expand_sequence_word_definition(&self, word: &str) -> Option<Vec<String>> {
         let mut new_operation_sequence = Vec::new();
-
-        for component in input_sequence {
-            if let Some(sequence) = self.words.get(component) {
-                for operation in sequence {
-                    new_operation_sequence.push(operation.to_string());
-                }
-            } else {
-                new_operation_sequence.push(component.to_string());
+        if let Some(sequence) = self.words_definition.get(word) {
+            for operation in sequence {
+                new_operation_sequence.push(operation.to_string());
             }
         }
-
         Some(new_operation_sequence)
     }
 
-    pub fn new_word(&mut self, word_name: &str, definition: &Vec<String>) {
-        if let Some(sequence) = self.expand_sequence(definition) {
-            self.words.insert(word_name.to_string(), sequence);
+    pub fn expand_sequence_word(&self, word: &str) -> Option<Vec<String>> {
+        let mut new_operation_sequence = Vec::new();
+        if let Some(sequence) = self.words.get(word) {
+            for operation in sequence {
+                new_operation_sequence.push(operation.to_string());
+            }
         }
+        Some(new_operation_sequence)
+    }
+
+    fn restructure_definitions(&mut self, word_name: &str) {
+        if let Some(word_value) = self.words.get(word_name) {
+            for component in word_value {
+                for definition in self.words_definition.values_mut() {
+                    for item in definition.iter_mut() {
+                        if *item == word_name {
+                            *item = component.to_string();
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    pub fn new_word(&mut self, word_name: &str, definition: &Vec<String>) {
+        let mut new_sequence = Vec::new();
+
+        if self.is_a_word(word_name) {
+            self.restructure_definitions(word_name);
+        }
+
+        for component in definition {
+            if component == word_name {
+                if let Some(old_definition) = self.expand_sequence_word(word_name) {
+                    new_sequence.extend(old_definition);
+                }
+            } else if self.is_a_word(component) {
+                if let Some(expanded) = self.expand_sequence_word(component) {
+                    new_sequence.extend(expanded);
+                } else {
+                    new_sequence.push(component.to_string());
+                }
+            } else {
+                new_sequence.push(component.to_string());
+            }
+        }
+
+        let def_name = format!("defname{}", self.number_definitions);
+        self.words_definition
+            .insert(def_name.to_string(), new_sequence);
+        self.words
+            .insert(word_name.to_string(), vec![def_name.to_string()]);
+        self.number_definitions += 1;
     }
 
     pub fn execute_fundamental_word(&mut self, fundamental_word: &str) {

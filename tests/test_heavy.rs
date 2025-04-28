@@ -5,7 +5,7 @@ use common::{read_final_stack, remove_test_file, run_forth_test};
 #[cfg(test)]
 mod test_heavy {
     use super::*;
-/*
+
     #[test]
     fn test_do_not_clone() {
         let script = "    : word1 1 ;
@@ -53,6 +53,4 @@ mod test_heavy {
         remove_test_file(script_file);
         remove_test_file(test_stack);
     }
-
-    */
 }

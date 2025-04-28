@@ -44,7 +44,6 @@ impl CommandLine {
 pub fn interpret_commands(interpreter: &mut ForthInterpreter, commands: Vec<String>) {
     let mut stream = CommandLine::new(commands);
     while let Some(token) = stream.next_token() {
-        //println!("token: {}",token);
         match_token(interpreter, token, &mut stream);
     }
 }
@@ -75,8 +74,8 @@ fn word_definition(interpreter: &mut ForthInterpreter, stream: &mut CommandLine)
 fn execute_token(interpreter: &mut ForthInterpreter, token: String, stream: &mut CommandLine) {
     if interpreter.is_a_fundamental_word(&token) {
         handle_fundamental_word(interpreter, token, stream);
-    } else if interpreter.is_a_word_definition(&token){
-
+    } else if interpreter.is_a_word_definition(&token) {
+        handle_word_definition(interpreter, token);
     } else if interpreter.is_a_word(&token) {
         handle_word(interpreter, token);
     } else if let Ok(num) = token.parse::<i16>() {
@@ -94,11 +93,12 @@ fn handle_fundamental_word(
     stream: &mut CommandLine,
 ) {
     match token.as_str() {
-        "IF" => {
+        "if" => {
             let (if_block, else_block) = parse_conditional_blocks(&mut stream.iter);
             // If we are here it means that we encountered a conditional evaluation.
             // So we have a tuple of (if_bock , else_block) so it depends of the condition
             // wich one will be executed.
+
             match interpreter.stack.pop() {
                 Ok(condition) => {
                     if condition != 0 {
@@ -116,9 +116,14 @@ fn handle_fundamental_word(
     }
 }
 
+fn handle_word_definition(interpreter: &mut ForthInterpreter, token: String) {
+    if let Some(sequence) = interpreter.expand_sequence_word_definition(&token) {
+        interpret_commands(interpreter, sequence);
+    }
+}
+
 fn handle_word(interpreter: &mut ForthInterpreter, token: String) {
-    let word = vec![token.to_string()];
-    if let Some(sequence) = interpreter.expand_sequence(&word) {
+    if let Some(sequence) = interpreter.expand_sequence_word(&token) {
         interpret_commands(interpreter, sequence);
     }
 }

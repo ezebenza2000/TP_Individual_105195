@@ -1,1 +1,1 @@
-1 2 3 4 5 . cr 5 6
+: foo 10 ; : foo foo 1 + ; foo
