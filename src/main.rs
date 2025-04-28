@@ -1,5 +1,4 @@
 mod commandinterpreter;
-mod commands;
 mod errors;
 mod file;
 mod forthinterpreter;
@@ -23,20 +22,32 @@ fn main() {
     }
 
     let input_file = &args[1];
-    let output_file = if args.len() >= 3 {
-        &args[2]
-    } else {
-        "stack.fth"
-    };
+    let mut stack_size: usize = 128000;
+    let mut output_file = "stack.fth";
 
-    let mut interpreter = ForthInterpreter::new();
+    if args.len() > 2 {
+        if let Ok(value) = parse::parse_stack_len(&args[2]) {
+            stack_size = value;
+        } else {
+            eprintln!("Failed to parse stack size");
+        }
+    }
+
+    //This helps for temporal stacks in tests.
+    if args.len() > 3 {
+        output_file = &args[3];
+    }
+
+    let mut interpreter = ForthInterpreter::new(stack_size);
 
     match file::read_file(input_file) {
         Ok(lines) => {
-            for line in lines {
-                let parsed = parse::parse(line);
-                commandinterpreter::interpret_commands(&mut interpreter, parsed);
-            }
+            let parsed = parse::parse(lines);
+            /*            for parse in parsed{
+                println!("parse:'{}´",parse);
+            } */
+
+            commandinterpreter::interpret_commands(&mut interpreter, parsed);
             interpreter.empty_forth(output_file);
         }
         Err(e) => eprintln!("Error while opening file: {}", e),

@@ -13,8 +13,9 @@ mod test_conditionals {
         let script = "1 1 =";
         let script_file = "tests/test_equals_true.fth";
         let test_stack = "tests/stack_equals_true.fth";
+        let test_stack_size = "stack-size={128000}";
 
-        run_forth_test(script, script_file, test_stack);
+        run_forth_test(script, script_file, test_stack_size, test_stack);
 
         let expected_stack = vec!["-1"];
         let actual_stack = read_final_stack(test_stack).unwrap();
@@ -30,8 +31,9 @@ mod test_conditionals {
         let script = "1 2 =";
         let script_file = "tests/test_equals_false.fth";
         let test_stack = "tests/stack_equals_false.fth";
+        let test_stack_size = "stack-size={128000}";
 
-        run_forth_test(script, script_file, test_stack);
+        run_forth_test(script, script_file, test_stack_size, test_stack);
 
         let expected_stack = vec!["0"];
         let actual_stack = read_final_stack(test_stack).unwrap();
@@ -47,8 +49,9 @@ mod test_conditionals {
         let script = "1 2 <";
         let script_file = "tests/test_less_true.fth";
         let test_stack = "tests/stack_less_true.fth";
+        let test_stack_size = "stack-size={128000}";
 
-        run_forth_test(script, script_file, test_stack);
+        run_forth_test(script, script_file, test_stack_size, test_stack);
 
         let expected_stack = vec!["-1"];
         let actual_stack = read_final_stack(test_stack).unwrap();
@@ -64,8 +67,9 @@ mod test_conditionals {
         let script = "2 1 <";
         let script_file = "tests/test_less_false.fth";
         let test_stack = "tests/stack_less_false.fth";
+        let test_stack_size = "stack-size={128000}";
 
-        run_forth_test(script, script_file, test_stack);
+        run_forth_test(script, script_file, test_stack_size, test_stack);
 
         let expected_stack = vec!["0"];
         let actual_stack = read_final_stack(test_stack).unwrap();
@@ -81,8 +85,9 @@ mod test_conditionals {
         let script = "2 2 <";
         let script_file = "tests/test_less_equals.fth";
         let test_stack = "tests/stack_less_equals.fth";
+        let test_stack_size = "stack-size={128000}";
 
-        run_forth_test(script, script_file, test_stack);
+        run_forth_test(script, script_file, test_stack_size, test_stack);
 
         let expected_stack = vec!["0"];
         let actual_stack = read_final_stack(test_stack).unwrap();
@@ -98,8 +103,9 @@ mod test_conditionals {
         let script = "2 1 >";
         let script_file = "tests/test_more_true.fth";
         let test_stack = "tests/stack_more_true.fth";
+        let test_stack_size = "stack-size={128000}";
 
-        run_forth_test(script, script_file, test_stack);
+        run_forth_test(script, script_file, test_stack_size, test_stack);
 
         let expected_stack = vec!["-1"];
         let actual_stack = read_final_stack(test_stack).unwrap();
@@ -115,8 +121,9 @@ mod test_conditionals {
         let script = "1 2 >";
         let script_file = "tests/test_more_false.fth";
         let test_stack = "tests/stack_more_false.fth";
+        let test_stack_size = "stack-size={128000}";
 
-        run_forth_test(script, script_file, test_stack);
+        run_forth_test(script, script_file, test_stack_size, test_stack);
 
         let expected_stack = vec!["0"];
         let actual_stack = read_final_stack(test_stack).unwrap();
@@ -132,8 +139,9 @@ mod test_conditionals {
         let script = "2 2 >";
         let script_file = "tests/test_more_equals.fth";
         let test_stack = "tests/stack_more_equals.fth";
+        let test_stack_size = "stack-size={128000}";
 
-        run_forth_test(script, script_file, test_stack);
+        run_forth_test(script, script_file, test_stack_size, test_stack);
 
         let expected_stack = vec!["0"];
         let actual_stack = read_final_stack(test_stack).unwrap();
@@ -149,8 +157,9 @@ mod test_conditionals {
         let script = "0 0 and";
         let script_file = "tests/test_and_none.fth";
         let test_stack = "tests/stack_and_none.fth";
+        let test_stack_size = "stack-size={128000}";
 
-        run_forth_test(script, script_file, test_stack);
+        run_forth_test(script, script_file, test_stack_size, test_stack);
 
         let expected_stack = vec!["0"];
         let actual_stack = read_final_stack(test_stack).unwrap();
@@ -166,8 +175,9 @@ mod test_conditionals {
         let script = "-1 0 and";
         let script_file = "tests/test_and_one.fth";
         let test_stack = "tests/stack_and_one.fth";
+        let test_stack_size = "stack-size={128000}";
 
-        run_forth_test(script, script_file, test_stack);
+        run_forth_test(script, script_file, test_stack_size, test_stack);
 
         let expected_stack = vec!["0"];
         let actual_stack = read_final_stack(test_stack).unwrap();
@@ -183,8 +193,9 @@ mod test_conditionals {
         let script = "-1 -1 and";
         let script_file = "tests/test_and_both.fth";
         let test_stack = "tests/stack_and_both.fth";
+        let test_stack_size = "stack-size={128000}";
 
-        run_forth_test(script, script_file, test_stack);
+        run_forth_test(script, script_file, test_stack_size, test_stack);
 
         let expected_stack = vec!["-1"];
         let actual_stack = read_final_stack(test_stack).unwrap();
@@ -200,8 +211,9 @@ mod test_conditionals {
         let script = "0 0 or";
         let script_file = "tests/test_or_none.fth";
         let test_stack = "tests/stack_or_none.fth";
+        let test_stack_size = "stack-size={128000}";
 
-        run_forth_test(script, script_file, test_stack);
+        run_forth_test(script, script_file, test_stack_size, test_stack);
 
         let expected_stack = vec!["0"];
         let actual_stack = read_final_stack(test_stack).unwrap();
@@ -217,8 +229,9 @@ mod test_conditionals {
         let script = "-1 0 or";
         let script_file = "tests/test_or_one.fth";
         let test_stack = "tests/stack_or_one.fth";
+        let test_stack_size = "stack-size={128000}";
 
-        run_forth_test(script, script_file, test_stack);
+        run_forth_test(script, script_file, test_stack_size, test_stack);
 
         let expected_stack = vec!["-1"];
         let actual_stack = read_final_stack(test_stack).unwrap();
@@ -234,8 +247,9 @@ mod test_conditionals {
         let script = "-1 -1 or";
         let script_file = "tests/test_or_both.fth";
         let test_stack = "tests/stack_or_both.fth";
+        let test_stack_size = "stack-size={128000}";
 
-        run_forth_test(script, script_file, test_stack);
+        run_forth_test(script, script_file, test_stack_size, test_stack);
 
         let expected_stack = vec!["-1"];
         let actual_stack = read_final_stack(test_stack).unwrap();
@@ -251,8 +265,9 @@ mod test_conditionals {
         let script = "-1 not";
         let script_file = "tests/test_not_true.fth";
         let test_stack = "tests/stack_not_true.fth";
+        let test_stack_size = "stack-size={128000}";
 
-        run_forth_test(script, script_file, test_stack);
+        run_forth_test(script, script_file, test_stack_size, test_stack);
 
         let expected_stack = vec!["0"];
         let actual_stack = read_final_stack(test_stack).unwrap();
@@ -268,8 +283,9 @@ mod test_conditionals {
         let script = "0 not";
         let script_file = "tests/test_not_false.fth";
         let test_stack = "tests/stack_not_false.fth";
+        let test_stack_size = "stack-size={128000}";
 
-        run_forth_test(script, script_file, test_stack);
+        run_forth_test(script, script_file, test_stack_size, test_stack);
 
         let expected_stack = vec!["-1"];
         let actual_stack = read_final_stack(test_stack).unwrap();
@@ -285,8 +301,9 @@ mod test_conditionals {
         let script = "10 not not";
         let script_file = "tests/test_not_not.fth";
         let test_stack = "tests/stack_not_not.fth";
+        let test_stack_size = "stack-size={128000}";
 
-        run_forth_test(script, script_file, test_stack);
+        run_forth_test(script, script_file, test_stack_size, test_stack);
 
         let expected_stack = vec!["-1"];
         let actual_stack = read_final_stack(test_stack).unwrap();

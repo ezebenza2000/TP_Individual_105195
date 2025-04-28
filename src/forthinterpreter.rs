@@ -1,7 +1,28 @@
-use crate::commands::*;
+use crate::traits::andcommand::AndCommand;
+use crate::traits::crcommand::CrCommand;
+use crate::traits::dividecommand::DivideCommand;
+use crate::traits::dotcommand::DotCommand;
+use crate::traits::dropcommand::DropCommand;
+use crate::traits::dupcommand::DupCommand;
+use crate::traits::elsecommand::ElseCommand;
+use crate::traits::emitcommand::EmitCommand;
+use crate::traits::equalcommand::EqualCommand;
+use crate::traits::executable::Executable;
+use crate::traits::greatercommand::GreaterCommand;
+use crate::traits::ifcommand::IfCommand;
+use crate::traits::lesscommand::LessCommand;
+use crate::traits::multiplycommand::MultiplyCommand;
+use crate::traits::notcommand::NotCommand;
+use crate::traits::orcommand::OrCommand;
+use crate::traits::overcommand::OverCommand;
+use crate::traits::rotcommand::RotCommand;
+use crate::traits::subtractcommand::SubtractCommand;
+use crate::traits::sumcommand::SumCommand;
+use crate::traits::swapcommand::SwapCommand;
+use crate::traits::thencommand::ThenCommand;
+
 use crate::file;
 use crate::stackforth::StackForth;
-use crate::traits::Executable;
 use std::collections::HashMap;
 
 /// Structures used
@@ -15,139 +36,108 @@ use std::collections::HashMap;
 pub struct ForthInterpreter {
     pub fundamental_words: HashMap<String, Box<dyn Executable>>,
     pub words: HashMap<String, Vec<String>>,
+    pub words_definition: HashMap<String, Vec<String>>,
     pub stack: StackForth,
+    number_definitions: usize,
 }
 
 impl ForthInterpreter {
-    pub fn new() -> Self {
+    pub fn new(stack_size: usize) -> Self {
         let mut interpreter = Self {
             fundamental_words: HashMap::new(),
             words: HashMap::new(),
-            stack: StackForth::new(),
+            words_definition: HashMap::new(),
+            stack: StackForth::new(stack_size),
+            number_definitions: 0,
         };
+        interpreter.register_fundamental_words();
+        interpreter.register_words();
 
+        interpreter
+    }
+
+    fn register_fundamental_words(&mut self) {
         // Forth fundamental operations definitions (never change)
-        interpreter
-            .fundamental_words
+        self.fundamental_words
             .insert("SUM".to_string(), Box::new(SumCommand));
-        interpreter
-            .fundamental_words
+        self.fundamental_words
             .insert("SUBTRACT".to_string(), Box::new(SubtractCommand));
-        interpreter
-            .fundamental_words
+        self.fundamental_words
             .insert("MULTIPLY".to_string(), Box::new(MultiplyCommand));
-        interpreter
-            .fundamental_words
+        self.fundamental_words
             .insert("DIVIDE".to_string(), Box::new(DivideCommand));
-        interpreter
-            .fundamental_words
+        self.fundamental_words
             .insert("CR".to_string(), Box::new(CrCommand));
-        interpreter
-            .fundamental_words
-            .insert(".".to_string(), Box::new(DotCommand));
-        interpreter
-            .fundamental_words
+        self.fundamental_words.insert(
+            ".".to_string(),
+            Box::new(DotCommand::new()) as Box<dyn Executable>,
+        );
+        self.fundamental_words
             .insert("DUP".to_string(), Box::new(DupCommand));
-        interpreter
-            .fundamental_words
+        self.fundamental_words
             .insert("DROP".to_string(), Box::new(DropCommand));
-        interpreter
-            .fundamental_words
+        self.fundamental_words
             .insert("SWAP".to_string(), Box::new(SwapCommand));
-        interpreter
-            .fundamental_words
+        self.fundamental_words
             .insert("OVER".to_string(), Box::new(OverCommand));
-        interpreter
-            .fundamental_words
+        self.fundamental_words
             .insert("ROT".to_string(), Box::new(RotCommand));
-        interpreter
-            .fundamental_words
-            .insert("EMIT".to_string(), Box::new(EmitCommand));
-        interpreter
-            .fundamental_words
+        self.fundamental_words.insert(
+            "EMIT".to_string(),
+            Box::new(EmitCommand::new()) as Box<dyn Executable>,
+        );
+        self.fundamental_words
             .insert("AND".to_string(), Box::new(AndCommand));
-        interpreter
-            .fundamental_words
+        self.fundamental_words
             .insert("OR".to_string(), Box::new(OrCommand));
-        interpreter
-            .fundamental_words
+        self.fundamental_words
             .insert("NOT".to_string(), Box::new(NotCommand));
-        interpreter
-            .fundamental_words
+        self.fundamental_words
             .insert("=".to_string(), Box::new(EqualCommand));
-        interpreter
-            .fundamental_words
+        self.fundamental_words
             .insert(">".to_string(), Box::new(GreaterCommand));
-        interpreter
-            .fundamental_words
+        self.fundamental_words
             .insert("<".to_string(), Box::new(LessCommand));
-        interpreter
-            .fundamental_words
+        self.fundamental_words
             .insert("IF".to_string(), Box::new(IfCommand));
-        interpreter
-            .fundamental_words
+        self.fundamental_words
             .insert("ELSE".to_string(), Box::new(ElseCommand));
-        interpreter
-            .fundamental_words
+        self.fundamental_words
             .insert("THEN".to_string(), Box::new(ThenCommand));
-
+    }
+    fn register_words(&mut self) {
         // Forth words definitions (can change)
-        interpreter
-            .words
-            .insert("+".to_string(), vec!["SUM".to_string()]);
-        interpreter
-            .words
+        self.words.insert("+".to_string(), vec!["SUM".to_string()]);
+        self.words
             .insert("-".to_string(), vec!["SUBTRACT".to_string()]);
-        interpreter
-            .words
+        self.words
             .insert("*".to_string(), vec!["MULTIPLY".to_string()]);
-        interpreter
-            .words
+        self.words
             .insert("/".to_string(), vec!["DIVIDE".to_string()]);
-        interpreter
-            .words
-            .insert("cr".to_string(), vec!["CR".to_string()]);
-        interpreter
-            .words
-            .insert(".".to_string(), vec![".".to_string()]);
-        interpreter
-            .words
+        self.words.insert("cr".to_string(), vec!["CR".to_string()]);
+        self.words.insert(".".to_string(), vec![".".to_string()]);
+        self.words
             .insert("dup".to_string(), vec!["DUP".to_string()]);
-        interpreter
-            .words
+        self.words
             .insert("drop".to_string(), vec!["DROP".to_string()]);
-        interpreter
-            .words
+        self.words
             .insert("swap".to_string(), vec!["SWAP".to_string()]);
-        interpreter
-            .words
+        self.words
             .insert("over".to_string(), vec!["OVER".to_string()]);
-        interpreter
-            .words
+        self.words
             .insert("rot".to_string(), vec!["ROT".to_string()]);
-        interpreter
-            .words
+        self.words
             .insert("emit".to_string(), vec!["EMIT".to_string()]);
-        interpreter
-            .words
+        self.words
             .insert("and".to_string(), vec!["AND".to_string()]);
-        interpreter
-            .words
-            .insert("or".to_string(), vec!["OR".to_string()]);
-        interpreter
-            .words
+        self.words.insert("or".to_string(), vec!["OR".to_string()]);
+        self.words
             .insert("not".to_string(), vec!["NOT".to_string()]);
-        interpreter
-            .words
-            .insert("if".to_string(), vec!["IF".to_string()]);
-        interpreter
-            .words
+        self.words.insert("if".to_string(), vec!["IF".to_string()]);
+        self.words
             .insert("else".to_string(), vec!["ELSE".to_string()]);
-        interpreter
-            .words
+        self.words
             .insert("then".to_string(), vec!["THEN".to_string()]);
-
-        interpreter
     }
 
     /// Empties the stack by calling `StackForth` and writes the content to the specified file path.
@@ -159,6 +149,9 @@ impl ForthInterpreter {
 
     pub fn is_a_word(&self, word: &str) -> bool {
         self.words.contains_key(word)
+    }
+    pub fn is_a_word_definition(&self, word: &str) -> bool {
+        self.words_definition.contains_key(word)
     }
 
     pub fn is_a_fundamental_word(&self, word: &str) -> bool {
@@ -190,7 +183,7 @@ impl ForthInterpreter {
     }
 
     pub fn execute_fundamental_word(&mut self, fundamental_word: &str) {
-        if let Some(value) = self.fundamental_words.get(fundamental_word) {
+        if let Some(value) = self.fundamental_words.get_mut(fundamental_word) {
             if let Err(e) = value.execute(&mut self.stack) {
                 print!("{}", e);
             }

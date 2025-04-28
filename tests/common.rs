@@ -16,21 +16,26 @@ pub fn remove_test_file(file_name: &str) {
 
 ///Given a script, a test_file to to write the script and a test_stack to store output.
 /// The function runs the main program
-pub fn run_forth_test(script: &str, test_file: &str, test_stack: &str) {
+pub fn run_forth_test(script: &str, test_file: &str, test_stack_size: &str, test_stack: &str) {
     fs::write(test_file, script).expect("Failed to write test file");
 
     Command::new("cargo")
-        .args(["run", "--", test_file, test_stack])
+        .args(["run", "--", test_file, test_stack_size, test_stack])
         .output()
         .expect("Failed to execute process");
 }
 
 ///Same as 'run_forth_test' but catches stout and return it as string
-pub fn run_forth_catch_output_test(script: &str, test_file: &str, test_stack: &str) -> String {
+pub fn run_forth_catch_output_test(
+    script: &str,
+    test_file: &str,
+    test_stack_size: &str,
+    test_stack: &str,
+) -> String {
     fs::write(test_file, script).expect("Failed to write test file");
 
     let output = Command::new("cargo")
-        .args(["run", "--", test_file, test_stack])
+        .args(["run", "--", test_file, test_stack_size, test_stack])
         .output()
         .expect("Failed to execute process");
 
@@ -41,11 +46,13 @@ pub fn run_forth_catch_output_test(script: &str, test_file: &str, test_stack: &s
 pub fn read_final_stack(stack_file: &str) -> Option<Vec<String>> {
     match file::read_file(stack_file) {
         Ok(lines) => {
-            for line in lines {
-                let parsed = parse::parse(line);
-                return Some(parsed);
+            let parsed = parse::parse(lines);
+
+            if parsed.is_empty() {
+                None
+            } else {
+                Some(parsed)
             }
-            None
         }
         _ => None,
     }

@@ -44,6 +44,7 @@ impl CommandLine {
 pub fn interpret_commands(interpreter: &mut ForthInterpreter, commands: Vec<String>) {
     let mut stream = CommandLine::new(commands);
     while let Some(token) = stream.next_token() {
+        //println!("token: {}",token);
         match_token(interpreter, token, &mut stream);
     }
 }
@@ -74,11 +75,13 @@ fn word_definition(interpreter: &mut ForthInterpreter, stream: &mut CommandLine)
 fn execute_token(interpreter: &mut ForthInterpreter, token: String, stream: &mut CommandLine) {
     if interpreter.is_a_fundamental_word(&token) {
         handle_fundamental_word(interpreter, token, stream);
+    } else if interpreter.is_a_word_definition(&token){
+
     } else if interpreter.is_a_word(&token) {
         handle_word(interpreter, token);
     } else if let Ok(num) = token.parse::<i16>() {
         if let Err(e) = interpreter.stack.push(num) {
-            print!("{}", e);
+            println!("{}", e);
         }
     } else {
         println!("?");
@@ -121,17 +124,9 @@ fn handle_word(interpreter: &mut ForthInterpreter, token: String) {
 }
 
 fn print_command(stream: &mut CommandLine) {
-    let mut output = String::new();
+    let output = stream.next_token();
 
-    while let Some(word) = stream.next_token() {
-        if word.ends_with('"') {
-            output.push_str(word.trim_end_matches('"'));
-            break;
-        } else {
-            output.push_str(&word);
-            output.push(' ');
-        }
+    if let Some(value) = output {
+        print!("{}", value);
     }
-
-    print!("{}", output);
 }

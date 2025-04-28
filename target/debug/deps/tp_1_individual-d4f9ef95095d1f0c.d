@@ -1,0 +1,38 @@
+/home/ezequiel/Desktop/Echu/Materias/Informatica/Fiuba/TallerDeProgramacion/TP_Individual_105195/target/debug/deps/libtp_1_individual-d4f9ef95095d1f0c.rmeta: src/main.rs src/commandinterpreter.rs src/errors.rs src/file.rs src/forthinterpreter.rs src/parse.rs src/stackforth.rs src/traits/mod.rs src/traits/executable.rs src/traits/andcommand.rs src/traits/crcommand.rs src/traits/dividecommand.rs src/traits/dotcommand.rs src/traits/dropcommand.rs src/traits/dupcommand.rs src/traits/elsecommand.rs src/traits/emitcommand.rs src/traits/equalcommand.rs src/traits/greatercommand.rs src/traits/ifcommand.rs src/traits/lesscommand.rs src/traits/multiplycommand.rs src/traits/notcommand.rs src/traits/orcommand.rs src/traits/overcommand.rs src/traits/rotcommand.rs src/traits/subtractcommand.rs src/traits/sumcommand.rs src/traits/swapcommand.rs src/traits/thencommand.rs Cargo.toml
+
+/home/ezequiel/Desktop/Echu/Materias/Informatica/Fiuba/TallerDeProgramacion/TP_Individual_105195/target/debug/deps/tp_1_individual-d4f9ef95095d1f0c.d: src/main.rs src/commandinterpreter.rs src/errors.rs src/file.rs src/forthinterpreter.rs src/parse.rs src/stackforth.rs src/traits/mod.rs src/traits/executable.rs src/traits/andcommand.rs src/traits/crcommand.rs src/traits/dividecommand.rs src/traits/dotcommand.rs src/traits/dropcommand.rs src/traits/dupcommand.rs src/traits/elsecommand.rs src/traits/emitcommand.rs src/traits/equalcommand.rs src/traits/greatercommand.rs src/traits/ifcommand.rs src/traits/lesscommand.rs src/traits/multiplycommand.rs src/traits/notcommand.rs src/traits/orcommand.rs src/traits/overcommand.rs src/traits/rotcommand.rs src/traits/subtractcommand.rs src/traits/sumcommand.rs src/traits/swapcommand.rs src/traits/thencommand.rs Cargo.toml
+
+src/main.rs:
+src/commandinterpreter.rs:
+src/errors.rs:
+src/file.rs:
+src/forthinterpreter.rs:
+src/parse.rs:
+src/stackforth.rs:
+src/traits/mod.rs:
+src/traits/executable.rs:
+src/traits/andcommand.rs:
+src/traits/crcommand.rs:
+src/traits/dividecommand.rs:
+src/traits/dotcommand.rs:
+src/traits/dropcommand.rs:
+src/traits/dupcommand.rs:
+src/traits/elsecommand.rs:
+src/traits/emitcommand.rs:
+src/traits/equalcommand.rs:
+src/traits/greatercommand.rs:
+src/traits/ifcommand.rs:
+src/traits/lesscommand.rs:
+src/traits/multiplycommand.rs:
+src/traits/notcommand.rs:
+src/traits/orcommand.rs:
+src/traits/overcommand.rs:
+src/traits/rotcommand.rs:
+src/traits/subtractcommand.rs:
+src/traits/sumcommand.rs:
+src/traits/swapcommand.rs:
+src/traits/thencommand.rs:
+Cargo.toml:
+
+# env-dep:CLIPPY_ARGS=
+# env-dep:CLIPPY_CONF_DIR

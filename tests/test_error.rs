@@ -11,8 +11,9 @@ mod test_error {
         let script = "+";
         let script_file = "tests/test_underflow_1.fth";
         let test_stack = "tests/stack_underflow_1.fth";
+        let test_stack_size = "stack-size={128000}";
 
-        let output = run_forth_catch_output_test(script, script_file, test_stack);
+        let output = run_forth_catch_output_test(script, script_file, test_stack_size, test_stack);
 
         assert!(
             output.contains("stack-underflow"),
@@ -36,8 +37,9 @@ mod test_error {
         let script = "1 +";
         let script_file = "tests/test_underflow_2.fth";
         let test_stack = "tests/stack_underflow_2.fth";
+        let test_stack_size = "stack-size={128000}";
 
-        let output = run_forth_catch_output_test(script, script_file, test_stack);
+        let output = run_forth_catch_output_test(script, script_file, test_stack_size, test_stack);
 
         assert!(
             output.contains("stack-underflow"),
@@ -61,8 +63,9 @@ mod test_error {
         let script = "-";
         let script_file = "tests/test_underflow_3.fth";
         let test_stack = "tests/stack_underflow_3.fth";
+        let test_stack_size = "stack-size={128000}";
 
-        let output = run_forth_catch_output_test(script, script_file, test_stack);
+        let output = run_forth_catch_output_test(script, script_file, test_stack_size, test_stack);
 
         assert!(
             output.contains("stack-underflow"),
@@ -86,8 +89,9 @@ mod test_error {
         let script = "1 -";
         let script_file = "tests/test_underflow_4.fth";
         let test_stack = "tests/stack_underflow_4.fth";
+        let test_stack_size = "stack-size={128000}";
 
-        let output = run_forth_catch_output_test(script, script_file, test_stack);
+        let output = run_forth_catch_output_test(script, script_file, test_stack_size, test_stack);
 
         assert!(
             output.contains("stack-underflow"),
@@ -111,8 +115,9 @@ mod test_error {
         let script = "*";
         let script_file = "tests/test_underflow_5.fth";
         let test_stack = "tests/stack_underflow_5.fth";
+        let test_stack_size = "stack-size={128000}";
 
-        let output = run_forth_catch_output_test(script, script_file, test_stack);
+        let output = run_forth_catch_output_test(script, script_file, test_stack_size, test_stack);
 
         assert!(
             output.contains("stack-underflow"),
@@ -136,8 +141,9 @@ mod test_error {
         let script = "1 *";
         let script_file = "tests/test_underflow_6.fth";
         let test_stack = "tests/stack_underflow_6.fth";
+        let test_stack_size = "stack-size={128000}";
 
-        let output = run_forth_catch_output_test(script, script_file, test_stack);
+        let output = run_forth_catch_output_test(script, script_file, test_stack_size, test_stack);
 
         assert!(
             output.contains("stack-underflow"),
@@ -161,8 +167,9 @@ mod test_error {
         let script = "/";
         let script_file = "tests/test_underflow_7.fth";
         let test_stack = "tests/stack_underflow_7.fth";
+        let test_stack_size = "stack-size={128000}";
 
-        let output = run_forth_catch_output_test(script, script_file, test_stack);
+        let output = run_forth_catch_output_test(script, script_file, test_stack_size, test_stack);
 
         assert!(
             output.contains("stack-underflow"),
@@ -186,8 +193,9 @@ mod test_error {
         let script = "1 /";
         let script_file = "tests/test_underflow_8.fth";
         let test_stack = "tests/stack_underflow_8.fth";
+        let test_stack_size = "stack-size={128000}";
 
-        let output = run_forth_catch_output_test(script, script_file, test_stack);
+        let output = run_forth_catch_output_test(script, script_file, test_stack_size, test_stack);
 
         assert!(
             output.contains("stack-underflow"),
@@ -211,8 +219,9 @@ mod test_error {
         let script = "dup";
         let script_file = "tests/test_underflow_9.fth";
         let test_stack = "tests/stack_underflow_9.fth";
+        let test_stack_size = "stack-size={128000}";
 
-        let output = run_forth_catch_output_test(script, script_file, test_stack);
+        let output = run_forth_catch_output_test(script, script_file, test_stack_size, test_stack);
 
         assert!(
             output.contains("stack-underflow"),
@@ -236,8 +245,9 @@ mod test_error {
         let script = "drop";
         let script_file = "tests/test_underflow_10.fth";
         let test_stack = "tests/stack_underflow_10.fth";
+        let test_stack_size = "stack-size={128000}";
 
-        let output = run_forth_catch_output_test(script, script_file, test_stack);
+        let output = run_forth_catch_output_test(script, script_file, test_stack_size, test_stack);
 
         assert!(
             output.contains("stack-underflow"),
@@ -261,8 +271,9 @@ mod test_error {
         let script = "swap";
         let script_file = "tests/test_underflow_11.fth";
         let test_stack = "tests/stack_underflow_11.fth";
+        let test_stack_size = "stack-size={128000}";
 
-        let output = run_forth_catch_output_test(script, script_file, test_stack);
+        let output = run_forth_catch_output_test(script, script_file, test_stack_size, test_stack);
 
         assert!(
             output.contains("stack-underflow"),
@@ -286,8 +297,9 @@ mod test_error {
         let script = "1 swap";
         let script_file = "tests/test_underflow_12.fth";
         let test_stack = "tests/stack_underflow_12.fth";
+        let test_stack_size = "stack-size={128000}";
 
-        let output = run_forth_catch_output_test(script, script_file, test_stack);
+        let output = run_forth_catch_output_test(script, script_file, test_stack_size, test_stack);
 
         assert!(
             output.contains("stack-underflow"),
@@ -311,8 +323,9 @@ mod test_error {
         let script = "over";
         let script_file = "tests/test_underflow_13.fth";
         let test_stack = "tests/stack_underflow_13.fth";
+        let test_stack_size = "stack-size={128000}";
 
-        let output = run_forth_catch_output_test(script, script_file, test_stack);
+        let output = run_forth_catch_output_test(script, script_file, test_stack_size, test_stack);
 
         assert!(
             output.contains("stack-underflow"),
@@ -336,8 +349,9 @@ mod test_error {
         let script = "1 over";
         let script_file = "tests/test_underflow_14.fth";
         let test_stack = "tests/stack_underflow_14.fth";
+        let test_stack_size = "stack-size={128000}";
 
-        let output = run_forth_catch_output_test(script, script_file, test_stack);
+        let output = run_forth_catch_output_test(script, script_file, test_stack_size, test_stack);
 
         assert!(
             output.contains("stack-underflow"),
@@ -361,8 +375,9 @@ mod test_error {
         let script = "4 0 /";
         let script_file = "tests/test_division_by_zero.fth";
         let test_stack = "tests/stack_division_by_zero.fth";
+        let test_stack_size = "stack-size={128000}";
 
-        let output = run_forth_catch_output_test(script, script_file, test_stack);
+        let output = run_forth_catch_output_test(script, script_file, test_stack_size, test_stack);
 
         assert!(
             output.contains("division-by-zero"),
@@ -386,8 +401,9 @@ mod test_error {
         let script = ": 1 2 ;";
         let script_file = "tests/test_invalid_word_1.fth";
         let test_stack = "tests/stack_invalid_word_1.fth";
+        let test_stack_size = "stack-size={128000}";
 
-        let output = run_forth_catch_output_test(script, script_file, test_stack);
+        let output = run_forth_catch_output_test(script, script_file, test_stack_size, test_stack);
 
         assert!(
             output.contains("invalid-word"),
@@ -411,8 +427,9 @@ mod test_error {
         let script = ": -1 2 ;";
         let script_file = "tests/test_invalid_word_2.fth";
         let test_stack = "tests/stack_invalid_word_2.fth";
+        let test_stack_size = "stack-size={128000}";
 
-        let output = run_forth_catch_output_test(script, script_file, test_stack);
+        let output = run_forth_catch_output_test(script, script_file, test_stack_size, test_stack);
 
         assert!(
             output.contains("invalid-word"),
@@ -436,8 +453,9 @@ mod test_error {
         let script = "foo";
         let script_file = "tests/test_unknown_word.fth";
         let test_stack = "tests/stack_unknown_word.fth";
+        let test_stack_size = "stack-size={128000}";
 
-        let output = run_forth_catch_output_test(script, script_file, test_stack);
+        let output = run_forth_catch_output_test(script, script_file, test_stack_size, test_stack);
 
         assert!(
             output.contains("?"),
@@ -458,21 +476,19 @@ mod test_error {
 
     #[test]
     fn test_limited_stack() {
-        let script = "1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19";
+        let script = "1 2 3 4 5 . cr 5 6";
         let script_file = "tests/test_limited_stack.fth";
         let test_stack = "tests/stack_limited_stack.fth";
+        let test_stack_size = "stack-size={10}";
 
-        let output = run_forth_catch_output_test(script, script_file, test_stack);
+        let output = run_forth_catch_output_test(script, script_file, test_stack_size, test_stack);
         assert!(
-            output.contains("stack-overflow"),
+            output.contains("5\nstack-overflow\n"),
             "Expected output to contain 'stack-overflow', but got:\n{}",
             output
         );
 
-        let expected_stack = vec![
-            "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16",
-            "17", "18",
-        ];
+        let expected_stack = vec!["1", "2", "3", "4", "5"];
         let actual_stack = read_final_stack(test_stack).unwrap();
         assert_eq!(actual_stack, expected_stack);
 

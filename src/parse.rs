@@ -1,25 +1,69 @@
-///FUNCTION: parse(line: String) -> Vec<String>
-///
-///PRE: Receive a string.
-///POST: Return an array of the string split by empty space.
-/// note: No extra whitespaces in between
 pub fn parse(line: String) -> Vec<String> {
     let mut elements = Vec::new();
+    let mut auxiliar_string = String::new();
+    let mut chars = line.chars().peekable();
 
-    for word in line.split(' ') {
-        let word = word.trim();
-        if word.is_empty() {
-            continue;
+    while let Some(char) = chars.next() {
+        if char == ' ' {
+            if !auxiliar_string.is_empty() {
+                elements.push(auxiliar_string.to_lowercase());
+                auxiliar_string = String::new();
+            }
         }
+        // Cuando encuentra el punto seguido de comilla (.")
+        else if char == '.' && chars.peek() == Some(&'"') {
+            auxiliar_string.push(char); // Se guarda el .
+            chars.next(); // Consume la comilla doble
+            auxiliar_string.push('"'); // Guarda la comilla doble
+            elements.push(auxiliar_string.to_lowercase());
+            auxiliar_string = String::new();
+            chars.next();
+            // Ahora iteramos hasta encontrar el cierre de la comilla
 
-        if word.parse::<i16>().is_ok() {
-            elements.push(word.to_string());
-        } else {
-            elements.push(word.to_lowercase());
+            for c in chars.by_ref() {
+                if c == '"' {
+                    break;
+                }
+                auxiliar_string.push(c);
+            }
+
+            // Al terminar con el texto entre comillas, guardamos en elements
+            elements.push(auxiliar_string.to_lowercase());
+            auxiliar_string = String::new(); // Reinicio el string auxiliar
+        }
+        // En caso contrario, seguimos acumulando el carácter en auxiliar_string
+        else {
+            auxiliar_string.push(char);
         }
     }
 
+    // Si al final hay algo en auxiliar_string, lo agregamos
+    if !auxiliar_string.is_empty() {
+        elements.push(auxiliar_string.to_lowercase());
+    }
+
     elements
+}
+
+pub fn parse_stack_len(argument: &str) -> Result<usize, Box<dyn std::error::Error>> {
+    let mut chain = String::new();
+    let mut inside = false;
+
+    for element in argument.chars() {
+        if element == '{' {
+            inside = true;
+            continue;
+        }
+        if element == '}' {
+            break;
+        }
+        if inside {
+            chain.push(element);
+        }
+    }
+
+    let value = chain.parse::<usize>()?;
+    Ok(value)
 }
 
 ///FUNCTION: parse_conditional_blocks( iter: &mut impl Iterator<Item = String> ) -> (Vec<String>, Option<Vec<String>>)

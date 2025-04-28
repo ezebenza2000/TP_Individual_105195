@@ -7,15 +7,16 @@ pub struct StackForth {
 
 impl Default for StackForth {
     fn default() -> Self {
-        Self::new()
+        Self::new(128_000)
     }
 }
 
 impl StackForth {
-    pub fn new() -> Self {
+    pub fn new(stack_size: usize) -> Self {
+        let max_stack_size = stack_size / std::mem::size_of::<i16>();
         Self {
-            stack: Vec::new(),
-            max_stack_size: 18,
+            stack: Vec::with_capacity(max_stack_size),
+            max_stack_size,
         }
     }
 
@@ -157,14 +158,14 @@ mod test {
 
     #[test]
     fn test_push_pop() {
-        let mut stack = StackForth::new();
+        let mut stack = StackForth::new(128000);
         stack.push(42).unwrap();
         assert_eq!(stack.pop().unwrap(), 42);
     }
 
     #[test]
     fn test_add() {
-        let mut stack = StackForth::new();
+        let mut stack = StackForth::new(128000);
         stack.push(10).unwrap();
         stack.push(5).unwrap();
         stack.add().unwrap();
@@ -173,7 +174,7 @@ mod test {
 
     #[test]
     fn test_subtract() {
-        let mut stack = StackForth::new();
+        let mut stack = StackForth::new(128000);
         stack.push(10).unwrap();
         stack.push(5).unwrap();
         stack.subtract().unwrap();
@@ -182,7 +183,7 @@ mod test {
 
     #[test]
     fn test_multiply() {
-        let mut stack = StackForth::new();
+        let mut stack = StackForth::new(128000);
         stack.push(10).unwrap();
         stack.push(5).unwrap();
         stack.multiply().unwrap();
@@ -191,7 +192,7 @@ mod test {
 
     #[test]
     fn test_divide() {
-        let mut stack = StackForth::new();
+        let mut stack = StackForth::new(128000);
         stack.push(10).unwrap();
         stack.push(5).unwrap();
         stack.divide().unwrap();
@@ -200,7 +201,7 @@ mod test {
 
     #[test]
     fn test_divide_by_zero() {
-        let mut stack = StackForth::new();
+        let mut stack = StackForth::new(128000);
         stack.push(10).unwrap();
         stack.push(0).unwrap();
         let result = stack.divide();
@@ -209,7 +210,7 @@ mod test {
 
     #[test]
     fn test_dup() {
-        let mut stack = StackForth::new();
+        let mut stack = StackForth::new(128000);
         stack.push(42).unwrap();
         stack.dup().unwrap();
         assert_eq!(stack.pop().unwrap(), 42);
@@ -218,7 +219,7 @@ mod test {
 
     #[test]
     fn test_drop() {
-        let mut stack = StackForth::new();
+        let mut stack = StackForth::new(128000);
         stack.push(42).unwrap();
         stack.drop().unwrap();
         assert!(stack.pop().is_err());
@@ -226,7 +227,7 @@ mod test {
 
     #[test]
     fn test_swap() {
-        let mut stack = StackForth::new();
+        let mut stack = StackForth::new(128000);
         stack.push(10).unwrap();
         stack.push(20).unwrap();
         stack.swap().unwrap();
@@ -236,7 +237,7 @@ mod test {
 
     #[test]
     fn test_over() {
-        let mut stack = StackForth::new();
+        let mut stack = StackForth::new(128000);
         stack.push(10).unwrap();
         stack.push(20).unwrap();
         stack.over().unwrap();
@@ -247,7 +248,7 @@ mod test {
 
     #[test]
     fn test_rot() {
-        let mut stack = StackForth::new();
+        let mut stack = StackForth::new(128000);
         stack.push(10).unwrap();
         stack.push(20).unwrap();
         stack.push(30).unwrap();
@@ -259,7 +260,7 @@ mod test {
 
     #[test]
     fn test_equal() {
-        let mut stack = StackForth::new();
+        let mut stack = StackForth::new(128000);
         stack.push(10).unwrap();
         stack.push(10).unwrap();
         stack.equal().unwrap();
@@ -268,7 +269,7 @@ mod test {
 
     #[test]
     fn test_not_equal() {
-        let mut stack = StackForth::new();
+        let mut stack = StackForth::new(128000);
         stack.push(10).unwrap();
         stack.push(5).unwrap();
         stack.equal().unwrap();
@@ -277,7 +278,7 @@ mod test {
 
     #[test]
     fn test_less_than() {
-        let mut stack = StackForth::new();
+        let mut stack = StackForth::new(128000);
         stack.push(5).unwrap();
         stack.push(10).unwrap();
         stack.less_than().unwrap();
@@ -286,7 +287,7 @@ mod test {
 
     #[test]
     fn test_not_less_than() {
-        let mut stack = StackForth::new();
+        let mut stack = StackForth::new(128000);
         stack.push(10).unwrap();
         stack.push(5).unwrap();
         stack.less_than().unwrap();
@@ -295,7 +296,7 @@ mod test {
 
     #[test]
     fn test_greater_than() {
-        let mut stack = StackForth::new();
+        let mut stack = StackForth::new(128000);
         stack.push(10).unwrap();
         stack.push(5).unwrap();
         stack.greater_than().unwrap();
@@ -304,7 +305,7 @@ mod test {
 
     #[test]
     fn test_not_greater_than() {
-        let mut stack = StackForth::new();
+        let mut stack = StackForth::new(128000);
         stack.push(5).unwrap();
         stack.push(10).unwrap();
         stack.greater_than().unwrap();
@@ -313,7 +314,7 @@ mod test {
 
     #[test]
     fn test_and() {
-        let mut stack = StackForth::new();
+        let mut stack = StackForth::new(128000);
         stack.push(1).unwrap();
         stack.push(1).unwrap();
         stack.and().unwrap();
@@ -332,7 +333,7 @@ mod test {
 
     #[test]
     fn test_or() {
-        let mut stack = StackForth::new();
+        let mut stack = StackForth::new(128000);
         stack.push(1).unwrap();
         stack.push(1).unwrap();
         stack.or().unwrap();
@@ -351,7 +352,7 @@ mod test {
 
     #[test]
     fn test_not() {
-        let mut stack = StackForth::new();
+        let mut stack = StackForth::new(128000);
         stack.push(1).unwrap();
         stack.not().unwrap();
         assert_eq!(stack.pop().unwrap(), 0);

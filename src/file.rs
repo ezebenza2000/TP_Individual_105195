@@ -2,7 +2,7 @@ use crate::stackforth::StackForth;
 use std::fs::File;
 use std::io::{self, BufRead, BufReader, Write};
 
-pub fn read_file(file_name: &str) -> Result<Vec<String>, io::Error> {
+pub fn read_file(file_name: &str) -> Result<String, io::Error> {
     let file = File::open(file_name)?;
 
     let reader = BufReader::new(file);
@@ -15,7 +15,7 @@ pub fn read_file(file_name: &str) -> Result<Vec<String>, io::Error> {
             Err(error) => eprintln!("Error al leer línea: {}", error),
         }
     }
-    Ok(lines)
+    Ok(lines.join(" "))
 }
 
 pub fn write_to_file(file_name: &str, stack: &mut StackForth) -> Result<(), io::Error> {
